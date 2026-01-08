@@ -1,0 +1,43 @@
+Retrieve all information 'de_spelen':
+SELECT * FROM de_spelen
+
+Count the number of unique disciplines from 'de_spelen':
+SELECT COUNT(DISTINCT Discipline) FROM de_spelen;
+
+Retrieve all records from 'de_spelen' where the countries are Germany and USA:
+SELECT * FROM de_spelen WHERE Country IN('Germany','USA'): 
+
+
+Count the number of medals per country in the 'de_spelen' table
+Results are ordered from the country with the most medals to the least:
+SELECT Country, COUNT(Medal) AS MEDAILLE 
+FROM de_spelen
+GROUP BY Country
+ORDER BY MEDAILLE DESC;
+
+List countries with more than 5 gold medals in 'de_spelen' using a subquery:
+SELECT Country FROM
+(SELECT Country, COUNT(Medal) AS MEDAILLE
+FROM de_spelen
+WHERE Medal = 'GOLD'
+GROUP BY Country
+)
+AS sub 
+WHERE MEDAILLE > 5;
+
+
+
+Count the number of countries with more than 5 gold medals using a subquery:
+SELECT COUNT(*) FROM (
+SELECT Country
+FROM de_spelen
+WHERE MEdal = 'GOLD'
+GROUP BY Country
+HAVING COUNT(Medal) > 5
+)
+AS sub;
+
+
+
+
+
