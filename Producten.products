@@ -1,0 +1,42 @@
+-- 1: View the full products table
+-- Display all records to understand the structure and content of the dataset.
+SELECT * FROM Producten.products;
+
+
+-- 2: Count unique product categories
+-- Identify how many different categories exist in the products table.
+SELECT COUNT(DISTINCT category) 
+FROM Producten.products;
+
+
+-- 3: Count products in a specific category
+-- Measure how many products belong to the 'Books' category.
+SELECT COUNT(category) 
+FROM Producten.products
+WHERE category IN ('Books');
+
+
+-- 4: Rank products by stock level
+-- Purpose: Assign a ranking to each product based on available stock, from highest to lowest.
+SELECT product_id, product_name, category,
+       ROW_NUMBER() OVER (ORDER BY stock DESC) AS stock_rank
+FROM Producten.products;
+
+
+-- 5: Count products with high total price value
+-- Determine how many products have a total price more than 495.
+-- Uses a subquery with aggregation to filter high-value products.
+SELECT COUNT(*) AS Price_Category 
+FROM (
+    SELECT product_id
+    FROM Producten.products
+    GROUP BY product_id
+    HAVING SUM(price) > 495
+) AS sub;
+
+
+-- 6: Compare each product’s price with the next one
+-- Show the next product price in descending order to support price comparison analysis.
+SELECT product_id, product_name, category, price,
+       LEAD(price) OVER (ORDER BY price DESC) AS next_price
+FROM Producten.products;
