@@ -1,0 +1,45 @@
+-- 1. Retrieve all records from the movies table:
+SELECT * FROM MOVIES.global_movies;
+
+-- 2. Display basic movie details and show the city with its country
+-- Example of the output can be for example, Los Angeles(USA) 
+SELECT movie_id, title, genre, release_year, 
+       CONCAT(city, ' (', country, ')') AS location
+FROM MOVIES.global_movies;
+
+-- 3. Check whether each movie was profitable
+-- 'Pass' = box office is higher than budget
+-- 'Fail' = box office is lower than budget
+SELECT movie_id, title, genre, release_year, 
+       budget_million_usd,
+       IF(box_office_million_usd > budget_million_usd, 'Pass', 'Fail') AS result
+FROM MOVIES.global_movies;
+
+-- 4. Standardize the genre name
+-- Replaces 'SciFi' with the more descriptive 'Science Fiction'
+SELECT movie_id, title, genre, release_year, 
+       REPLACE(genre, 'SciFi', 'Science Fiction') AS genre_updated
+FROM MOVIES.global_movies;
+
+
+-- 5. Count how many movies earned more than 900 million USD in total box office
+-- Uses a subquery to first find qualifying movies, then counts them
+SELECT COUNT(*) AS high_grossing_movies
+FROM (
+    SELECT movie_id
+    FROM MOVIES.global_movies
+    GROUP BY movie_id
+    HAVING SUM(box_office_million_usd) > 900
+) AS sub;
+
+
+-- 6. List movies from the USA that are NOT in the Romance genre
+-- Uses a subquery to exclude all Romance titles
+SELECT movie_id, genre, title, budget_million_usd, country
+FROM MOVIES.global_movies
+WHERE country = 'USA'
+  AND title NOT IN (
+      SELECT title
+      FROM MOVIES.global_movies
+      WHERE genre = 'Romance'
+  );
