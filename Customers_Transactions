@@ -1,0 +1,45 @@
+-- 1: Filter customers by selected countries
+-- Retrieve customers who are located in the UK, Canada, or France.
+SELECT * FROM Prac2Tables.mysql_customers_table
+WHERE country IN ('UK', 'Canada', 'France');
+
+
+-- 2: Match transactions with existing customers (INNER JOIN)
+-- Show only transactions that have a matching customer record.
+SELECT t.transaction_id, t.customer_id, t.amount_usd, c.customer_id
+FROM Prac2Tables.mysql_transactions_table AS t
+INNER JOIN Prac2Tables.mysql_customers_table AS c
+ON t.customer_id = c.customer_id;
+
+
+-- 3: Keep all transactions, even without a customer match (LEFT JOIN)
+-- Display every transaction and include customer data when available.
+SELECT t.transaction_id, t.customer_id, t.transaction_datetime, t.amount_usd, c.customer_id
+FROM Prac2Tables.mysql_transactions_table AS t
+LEFT JOIN Prac2Tables.mysql_customers_table AS c
+ON t.customer_id = c.customer_id;
+
+
+-- 4: Keep all customers, even without transactions (RIGHT JOIN)
+-- Display every customer and include transaction data when available.
+SELECT t.transaction_id, t.customer_id, t.transaction_datetime, t.amount_usd, c.customer_id
+FROM Prac2Tables.mysql_transactions_table AS t
+RIGHT JOIN Prac2Tables.mysql_customers_table AS c
+ON t.customer_id = c.customer_id;
+
+
+-- 5: Create all possible customer–transaction combinations (CROSS JOIN)
+-- Generate every possible pairing between customers and transactions.
+-- This is useful for testing, simulations, or learning how joins behave.
+SELECT c.customer_id, c.customer_name, c.country, t.customer_id
+FROM Prac2Tables.mysql_customers_table AS c
+CROSS JOIN Prac2Tables.mysql_transactions_table AS t;
+
+
+-- 6: Standard join to combine customer and transaction data
+-- Link customers to their transactions using a basic JOIN condition.
+-- In MySQL, JOIN without a type defaults to INNER JOIN.
+SELECT c.customer_id, c.customer_name, c.country, t.customer_id
+FROM Prac2Tables.mysql_customers_table AS c
+JOIN Prac2Tables.mysql_transactions_table AS t
+ON c.customer_id = t.customer_id;
