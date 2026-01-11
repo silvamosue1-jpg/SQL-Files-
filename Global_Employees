@@ -1,0 +1,50 @@
+-- 1: Filter employees by city name
+-- Retrieve employees who work in cities that start with the letter 'D'.
+SELECT employee_id, full_name, country, city 
+FROM GLOBALEMPLOYEE.global_employees_finance
+WHERE city LIKE 'D%';
+
+
+-- 2: Handle missing salary data with COALESCE
+-- Return the first available value between salary, bonus, or 0 when salary is missing.
+SELECT employee_id, full_name, salary_usd, bonus_usd, commission_usd,
+       COALESCE(salary_usd, bonus_usd, 0) AS income_value
+FROM GLOBALEMPLOYEE.global_employees_finance;
+
+
+-- 3: Replace NULL salaries with zero
+-- Ensure salary values are never NULL for easier calculations and reporting.
+SELECT employee_id, full_name, salary_usd, bonus_usd, commission_usd,
+       IFNULL(salary_usd, 0) AS SAL
+FROM GLOBALEMPLOYEE.global_employees_finance;
+
+
+-- 4: Prevent division errors using NULLIF
+-- Avoid dividing by zero when working with commission values.
+SELECT employee_id, full_name, salary_usd, bonus_usd,
+       commission_usd / NULLIF(commission_usd, 0) AS COMMI
+FROM GLOBALEMPLOYEE.global_employees_finance;
+
+
+-- 5: Categorize employees by salary level
+-- Classify salaries into HIGH, MODERATE, or LOW for compensation analysis.
+SELECT employee_id, full_name, salary_usd, bonus_usd, commission_usd, 
+       CASE 
+           WHEN salary_usd >= 100000 THEN 'HIGH'
+           WHEN salary_usd >= 75000  THEN 'MODERATE'
+           ELSE 'LOW'
+       END AS SALARIS
+FROM GLOBALEMPLOYEE.global_employees_finance;
+
+
+-- 6: Use EXISTS to check for matching records
+-- Return employees only if a matching record exists for the same country and city.
+-- This demonstrates how EXISTS can be used for row validation logic.
+SELECT employee_id, full_name, salary_usd, bonus_usd, commission_usd 
+FROM GLOBALEMPLOYEE.global_employees_finance
+WHERE EXISTS (
+    SELECT 1
+    FROM GLOBALEMPLOYEE.global_employees_finance g2
+    WHERE g2.country = GLOBALEMPLOYEE.global_employees_finance.country
+      AND g2.city    = GLOBALEMPLOYEE.global_employees_finance.city
+);
