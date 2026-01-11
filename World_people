@@ -1,0 +1,56 @@
+-- 1: Combine employees from two countries
+-- Retrieve people from Japan and the USA in one result set using UNION.
+-- UNION removes duplicates automatically.
+SELECT id, first_name, last_name, age, occupation, salary_usd
+FROM Mensen.world_people_full
+WHERE country = 'Japan'
+
+UNION 
+
+SELECT id, first_name, last_name, age, occupation, salary_usd
+FROM Mensen.world_people_full
+WHERE country = 'USA';
+
+
+-- 2: Find the position of a character in a string
+-- Identify where the letter 'a' appears in each country name.
+SELECT id, first_name, last_name, salary_usd,
+       LOCATE('a', country) AS letter_position
+FROM Mensen.world_people_full;
+
+
+-- Query 3: Calculate total salary cost
+-- Purpose: Determine the overall salary expense across all people.
+SELECT SUM(salary_usd) AS SALARIS
+FROM Mensen.world_people_full;
+
+
+-- 4: Rank high earners with pagination
+-- List the top earners while skipping the first 5 results.
+-- Uses ORDER BY with LIMIT and OFFSET for result pagination.
+SELECT id, first_name, last_name, country, city,
+       SUM(salary_usd) AS SALARIS
+FROM Mensen.world_people_full
+GROUP BY id, first_name, last_name, country, city
+ORDER BY SALARIS DESC
+LIMIT 20 OFFSET 5;
+
+
+-- 5: Count low-earning accountants
+-- Find how many accountants earn less than 50,000 in total salary.
+-- Uses a subquery with GROUP BY and HAVING for conditional aggregation.
+SELECT COUNT(*) 
+FROM (
+    SELECT id
+    FROM Mensen.world_people_full
+    WHERE occupation IN ('Accountant')
+    GROUP BY id
+    HAVING SUM(salary_usd) < 50000
+) AS sub;
+
+
+-- 6: Count people excluding one country
+-- Measure how many people are from countries other than India.
+SELECT COUNT(*) AS Country
+FROM Mensen.world_people_full
+WHERE country <> 'India';
