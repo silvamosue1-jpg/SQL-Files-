@@ -1,0 +1,62 @@
+-- 1: Show the current hour alongside transactions
+-- Show each transaction together with the current system hour.
+-- Useful for time-based reporting and real-time dashboards.
+SELECT transaction_id, transaction_datetime, amount_usd,
+       HOUR(NOW()) AS current_hour
+FROM Practice.mysql_datetime_practice_table;
+
+
+-- 2: Calculate a running total based on quantity
+-- Show cumulative quantity values ordered by quantity size.
+-- Demonstrates window functions with SUM() OVER().
+SELECT transaction_id, transaction_datetime, amount_usd,
+       SUM(quantity) OVER (ORDER BY quantity) AS running_total
+FROM Practice.mysql_datetime_practice_table;
+
+
+-- 3: Filter transactions by ID pattern
+-- Retrieve only transactions whose ID starts with '1'.
+-- Uses pattern matching with LIKE.
+SELECT transaction_id, transaction_datetime, amount_usd
+FROM Practice.mysql_datetime_practice_table
+WHERE transaction_id LIKE '1%';
+
+
+-- 4: Rank transactions by quantity
+-- Assign rankings to transactions based on quantity size.
+-- Uses DENSE_RANK() to avoid gaps in ranking.
+SELECT transaction_id, transaction_datetime, amount_usd,
+       DENSE_RANK() OVER (ORDER BY quantity DESC) AS quantity_rank
+FROM Practice.mysql_datetime_practice_table;
+
+
+-- 5: Add days to a transaction date
+-- Calculate a future date 30 days after each transaction.
+-- Adding days to the date using DATE_ADD().
+SELECT transaction_id, transaction_datetime, amount_usd,
+       DATE_ADD(transaction_datetime, INTERVAL 30 DAY) AS future_date
+FROM Practice.mysql_datetime_practice_table;
+
+
+-- 6: Subtract days from a transaction date
+-- Find the date exactly one week before each transaction.
+-- Substracting days from the date using DATE_SUB().
+SELECT transaction_id, transaction_datetime, amount_usd,
+       DATE_SUB(transaction_datetime, INTERVAL 7 DAY) AS previous_week_date
+FROM Practice.mysql_datetime_practice_table;
+
+
+-- 7: Calculate days since each transaction
+-- Measure how many days have passed since every transaction date.
+-- Uses DATEDIFF() for time interval analysis.
+SELECT transaction_id, transaction_datetime, amount_usd,
+       DATEDIFF(CURDATE(), DATE(transaction_datetime)) AS days_since_transaction
+FROM Practice.mysql_datetime_practice_table;
+
+
+-- 8: Calculate hours since each transaction
+-- Determine how many hours have passed since the transaction occurred.
+-- Uses TIMESTAMPDIFF() for precise time-based analysis.
+SELECT transaction_id, transaction_datetime, amount_usd,
+       TIMESTAMPDIFF(HOUR, transaction_datetime, NOW()) AS hours_since_transaction
+FROM Practice.mysql_datetime_practice_table;
