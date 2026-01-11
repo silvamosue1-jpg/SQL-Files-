@@ -1,0 +1,63 @@
+-- 1: Compare bonus and commission values
+-- Classify each employee as 'GOOD' or 'BAD' based on whether their bonus is lower than their commission.
+SELECT employee_id, full_name, country, city,
+       IF(bonus_usd < commission_usd, 'GOOD', 'BAD') AS performance_flag
+FROM GLOBALEMPLOYEE.global_employees_finance;
+
+
+-- 2: Find employees earning more than at least one other employee
+-- Use ANY to compare each salary against all salaries in the table.
+-- This demonstrates comparison with subqueries.
+SELECT employee_id, full_name, country, city, salary_usd 
+FROM GLOBALEMPLOYEE.global_employees_finance
+WHERE salary_usd > ANY (
+SELECT salary_usd
+FROM GLOBALEMPLOYEE.global_employees_finance
+);
+
+
+-- 3: Check for employees sharing the same location
+-- Return employees only if another record exists with the same country and city.
+-- Uses EXISTS for validation logic.
+SELECT employee_id, full_name, country, city, salary_usd 
+FROM GLOBALEMPLOYEE.global_employees_finance
+WHERE EXISTS (
+SELECT 1
+FROM GLOBALEMPLOYEE.global_employees_finance F2
+WHERE F2.country = GLOBALEMPLOYEE.global_employees_finance.country
+AND F2.city    = GLOBALEMPLOYEE.global_employees_finance.city
+);
+
+
+-- 4: Combine employees from two countries
+-- Retrieve employees from China and the USA in a single result set.
+-- UNION removes duplicate rows automatically.
+SELECT employee_id, full_name, country, city, salary_usd 
+FROM GLOBALEMPLOYEE.global_employees_finance
+WHERE country = 'China'
+
+UNION 
+
+SELECT employee_id, full_name, country, city, salary_usd 
+FROM GLOBALEMPLOYEE.global_employees_finance
+WHERE country = 'USA';
+
+
+-- 5: Categorize employees by bonus level
+-- Group employees into High, Average, or Low bonus categories.
+-- Uses CASE for business rule logic.
+SELECT employee_id, full_name, country, city, job_title, salary_usd, bonus_usd,
+       CASE
+           WHEN bonus_usd >= 16000 THEN 'High'
+           WHEN bonus_usd >= 10000 THEN 'Average'
+           ELSE 'Low'
+       END AS Bonus_Category
+FROM GLOBALEMPLOYEE.global_employees_finance;
+
+
+-- 6: Prevent division or calculation errors with NULLIF
+-- Convert zero commission values to NULL to avoid invalid calculations.
+-- Defensive SQL using NULLIF().
+SELECT employee_id, full_name, country, city, job_title, commission_usd, salary_usd,
+       NULLIF(commission_usd, 0) AS safe_commission
+FROM GLOBALEMPLOYEE.global_employees_finance;
