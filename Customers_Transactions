@@ -43,3 +43,5 @@ SELECT c.customer_id, c.customer_name, c.country, t.customer_id
 FROM Prac2Tables.mysql_customers_table AS c
 JOIN Prac2Tables.mysql_transactions_table AS t
 ON c.customer_id = t.customer_id;
+
+
