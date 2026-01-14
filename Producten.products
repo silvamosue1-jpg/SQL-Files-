@@ -40,3 +40,9 @@ FROM (
 SELECT product_id, product_name, category, price,
        LEAD(price) OVER (ORDER BY price DESC) AS next_price
 FROM Producten.products;
+
+-- 7: Calculate Gross Inventory Value per Product
+-- Determine the total inventory value for each product based on price and stock.
+SELECT product_name, product_id, price, stock, SUM(price * stock) AS Gross_Inventory_Value
+FROM Producten.products
+GROUP BY product_name, product_id, price, stock;
