@@ -54,3 +54,13 @@ WHERE EXISTS (
 SELECT employee_id, full_name, SUM(salary_usd * bonus_usd) AS SALARIS_BONUS
 FROM GLOBALEMPLOYEE.global_employees_finance
 GROUP BY employee_id, full_name;
+
+
+-- 8: : Compare Salary Values Across Two Datasets
+-- Analyze how employee salaries relate to salaries in another dataset by combining data from two different tables.
+
+SELECT g.employee_id, g.full_name, w.id, SUM(g.salary_usd * w.salary_usd) AS SALARIS
+FROM GLOBALEMPLOYEE.global_employees_finance as g
+LEFT JOIN Mensen.world_people_full as w
+ON g.salary_usd = w.salary_usd
+GROUP BY g.employee_id, g.full_name, w.id;
