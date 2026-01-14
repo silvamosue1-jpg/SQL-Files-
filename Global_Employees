@@ -48,3 +48,9 @@ WHERE EXISTS (
     WHERE g2.country = GLOBALEMPLOYEE.global_employees_finance.country
       AND g2.city    = GLOBALEMPLOYEE.global_employees_finance.city
 );
+
+-- 7: Calculate Total Salary-Bonus Impact per Employee
+-- Measure the combined financial impact of salary and bonus for each employee.
+SELECT employee_id, full_name, SUM(salary_usd * bonus_usd) AS SALARIS_BONUS
+FROM GLOBALEMPLOYEE.global_employees_finance
+GROUP BY employee_id, full_name;
