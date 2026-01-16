@@ -1,0 +1,65 @@
+-- 1: Standardize country names
+-- Replace abbreviated country names with full names for consistency.
+-- This is to improves data quality for reporting and geographic analysis.
+SELECT name, final_worth_usd, REPLACE(country, 'UK', 'United Kingdom') AS country_standardized
+FROM Miljard.billy;
+
+
+-- 2: Calculate average age for Indian billionaires
+-- Show the average age of individuals from India using a window function.
+-- This is good for demographic analysis and regional comparisons.
+SELECT id, name, country, 
+AVG(age) OVER () AS average_age
+FROM Miljard.billy
+WHERE country = 'India';
+
+
+-- 3: Count High-Net-Worth people
+-- Count how many people have a net worth above 61.5 billion USD.
+SELECT COUNT(*) 
+FROM (
+    SELECT name
+    FROM Miljard.billy
+    WHERE final_worth_usd > 61500000000
+    GROUP BY name
+) AS sub;
+
+
+-- 4: Count the people in the media industry
+-- Determine how many individuals work in the media industry.
+SELECT 
+    COUNT(*) AS industry_count
+FROM Miljard.billy
+WHERE industry = 'media';
+
+
+-- 5: Query: Calculate Total Net Worth per person
+-- Purpose: Summarize the total recorded net worth for each person.
+-- This one is helpful for identifying which person appears to have the highest wealth across multiple records in the dataset.
+SELECT name, SUM(final_worth_usd) AS worth_count
+FROM Miljard.billy
+GROUP BY name
+ORDER BY worth_count DESC;
+
+
+-- Query 6: Find the people younger than the average age
+-- Purpose: Identify people who are younger than the overall average age.
+WITH AvgAge AS (
+SELECT AVG(age) AS age_average 
+FROM Miljard.billy
+)
+SELECT * FROM Miljard.billy, AvgAge 
+WHERE age < age_average;
+
+
+-- 7: Rank billionaires by net worth
+-- Rank individuals based on their final net worth.
+SELECT name, age, country, industry,
+RANK() OVER (ORDER BY final_worth_usd DESC) AS wealth_rank
+FROM Miljard.billy;
+
+
+-- 8: Combine industry and source of wealth
+-- Create a descriptive field that combines industry and wealth source.
+SELECT name, age, country, final_worth_usd, CONCAT(industry, ' (', source_of_wealth, ')') AS industry_source
+FROM Miljard.billy;
