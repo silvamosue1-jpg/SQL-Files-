@@ -43,3 +43,13 @@ WHERE country = 'USA'
       FROM MOVIES.global_movies
       WHERE genre = 'Romance'
   );
+
+
+-- 7. Find movie(s) with the highest production budget
+-- Identify the movie or movies that have the maximum budget in the dataset.
+-- This is useful for financial analysis, benchmarking high-budget productions, 
+and understanding investment trends in the movie industry.
+SELECT * FROM MOVIES.global_movies
+WHERE budget_million_usd = (
+SELECT MAX(budget_million_usd) AS Max_Budget
+FROM MOVIES.global_movies);
