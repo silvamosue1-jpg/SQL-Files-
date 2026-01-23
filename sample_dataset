@@ -1,0 +1,51 @@
+-- 1: Count the number of unique departments
+-- Identify how many different departments exist in the dataset.
+-- Useful for organizational analysis and understanding business structure.
+SELECT COUNT(DISTINCT department) AS total_departments
+FROM Sample_Dataset.mysql_realistic_dataset_varied_roles AS realistic_data;
+
+
+-- 2: Average Unit Price per Department
+-- Calculate the average unit price by department
+-- Measure pricing trends across different departments.This helps compare product value distribution between departments.
+SELECT department, AVG(unit_price) AS average_unit_price
+FROM (
+    SELECT department, unit_price 
+    FROM Sample_Dataset.mysql_realistic_dataset_varied_roles
+) AS realistic_data
+GROUP BY department;
+
+
+-- 3: Highest Priced Item per Department (Using RANK)
+-- Find the highest unit price item in each department
+-- Identify top-priced products within every department. This is good for premium product analysis and pricing strategy.
+SELECT * FROM (
+SELECT customer_name, country, age, department, unit_price,
+RANK() OVER (PARTITION BY department ORDER BY unit_price DESC) AS rnk
+FROM Sample_Dataset.mysql_realistic_dataset_varied_roles
+) AS realistic_data
+WHERE rnk = 1;
+
+
+-- 4: Customers with Total Spending Above 5000
+-- Calculate total spending per customer and filter high spenders
+-- Identify customers who have spent more than 5000 in total. Good for customer segmentation and VIP customer analysis.
+
+SELECT r.customer_name, SUM(r.total_amount) AS total_spent
+FROM Sample_Dataset.mysql_realistic_dataset_varied_roles AS r
+LEFT JOIN Sample_Dataset.mysql_sample_dataset AS s
+ON r.order_id = s.order_id
+GROUP BY r.customer_name
+HAVING total_spent > 5000
+ORDER BY total_spent DESC;
+
+
+-- 5: Total Quantity Purchased per Customer (Right Join)
+-- Calculate total quantity ordered per customer
+-- Measure overall purchase volume for each customer. This will help to understand buying behavior and customer demand.
+
+SELECT r.customer_name, SUM(r.quantity) AS total_quantity
+FROM Sample_Dataset.mysql_realistic_dataset_varied_roles AS r
+RIGHT JOIN Sample_Dataset.mysql_sample_dataset AS s
+ON r.order_id = s.order_id
+GROUP BY r.customer_name;
