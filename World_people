@@ -54,3 +54,13 @@ FROM (
 SELECT COUNT(*) AS Country
 FROM Mensen.world_people_full
 WHERE country <> 'India';
+
+
+--7: Pair employees with the same occupation (Self Join)
+-- Match employees together based on having a recorded occupation. This is used 
+for identifying peer groups, role comparisons, or internal networking analysis.
+SELECT a.first_name AS employee1, b.first_name AS employee2, a.occupation
+FROM Mensen.world_people_full a
+INNER JOIN Mensen.world_people_full b
+    ON a.occupation = b.occupation
+   AND a.id < b.id; 
