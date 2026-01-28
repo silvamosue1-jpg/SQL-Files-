@@ -52,7 +52,7 @@ GROUP BY r.customer_name;
 
 -- 6: Query: Retrieve each customer's most recent order
 -- This shows the latest purchase made by every customer based on order date. It helps to see customer activity tracking, recency analysis, and retention reporting.
-SELECT s.customer_name, s.unit_price, s.order_date
+SELECT s.customer_name, s.order_date, s.unit_price
 FROM Sample_Dataset.mysql_realistic_dataset_varied_roles s
 WHERE s.order_date = (
 SELECT MAX(order_date)
