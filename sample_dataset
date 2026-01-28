@@ -49,3 +49,13 @@ FROM Sample_Dataset.mysql_realistic_dataset_varied_roles AS r
 RIGHT JOIN Sample_Dataset.mysql_sample_dataset AS s
 ON r.order_id = s.order_id
 GROUP BY r.customer_name;
+
+-- 6: Query: Retrieve each customer's most recent order
+-- This shows the latest purchase made by every customer based on order date. It helps to see customer activity tracking, recency analysis, and retention reporting.
+SELECT s.customer_name, s.unit_price, s.order_date
+FROM Sample_Dataset.mysql_realistic_dataset_varied_roles s
+WHERE s.order_date = (
+SELECT MAX(order_date)
+FROM Sample_Dataset.mysql_realistic_dataset_varied_roles
+WHERE customer_name = s.customer_name
+);
