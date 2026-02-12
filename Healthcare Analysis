@@ -1,0 +1,81 @@
+-- Query 1: Retrieve all patient records
+-- Show the complete healthcare dataset. This is useful for initial data exploration and understanding available variables.
+SELECT * FROM Healthcare.healthcare_dataset;
+
+-- Query 2: Average Patient Age by Hospital
+-- Calculate average patient age per hospital. Measure demographic distribution across hospitals.
+This helps with analyzing patient population trends and hospital demographics.
+SELECT hospital, AVG(age) AS average_age
+FROM (
+SELECT hospital, age FROM Healthcare.healthcare_dataset
+) t
+GROUP BY hospital
+ORDER BY average_age DESC;
+
+
+-- Query 3: Average Treatment Cost by Department
+-- Calculate average treatment cost by department. Compare healthcare spending across departments. Useful for cost analysis and budget allocation decisions.
+SELECT department, AVG(treatment_cost_usd) AS average_treatment_cost
+FROM (
+SELECT department, treatment_cost_usd FROM Healthcare.healthcare_dataset
+) t
+GROUP BY department
+ORDER BY average_treatment_cost DESC;
+
+
+-- Query 4: Pair Patients Treated at the Same Hospital (Self Join)
+-- Pair patients treated at the same hospital. Identify patient groupings within hospitals.
+-- Use case: Useful for cohort analysis or identifying shared treatment environments.
+
+SELECT a.patient_id AS patient1, b.patient_id AS patient2, a.hospital
+FROM Healthcare.healthcare_dataset a
+INNER JOIN Healthcare.healthcare_dataset b
+ON a.hospital = b.hospital
+AND a.patient_id < b.patient_id;
+
+
+-- Query 5: Categorize Patients by Age Group
+-- Classify patients into age categories. Segment patients based on age ranges. This is good for demographic analysis and targeted healthcare planning.
+SELECT patient_id, age, gender, department,
+CASE 
+WHEN age <= 35 THEN 'Under 35'
+WHEN age BETWEEN 36 AND 50 THEN '35-50'
+WHEN age BETWEEN 51 AND 60 THEN '50-60'
+ELSE 'Above 61'
+END AS age_category
+FROM Healthcare.healthcare_dataset;
+
+-- Query 6: Patients Readmitted Within 30 Days
+-- Identify patients readmitted within 30 days. Detect short-term readmissions. This can be important for hospital performance monitoring and quality of care analysis.
+SELECT * FROM Healthcare.healthcare_dataset
+WHERE readmitted_within_30_days >= 1;
+
+
+-- Query 7: Count Patients Readmitted Within 30 Days
+-- Count total number of readmitted patients. Measure frequency of short-term readmissions. Key metric for healthcare quality and patient outcome tracking.
+SELECT COUNT(*) AS readmission_count FROM Healthcare.healthcare_dataset
+WHERE readmitted_within_30_days >= 1;
+
+
+-- Query 8: Oldest Patient per Department (Using RANK)
+-- Identify the oldest patient in each department. Determine maximum age per department. 
+SELECT * FROM (
+SELECT patient_id, age, department,
+RANK() OVER (PARTITION BY department ORDER BY age DESC) AS rnk
+FROM Healthcare.healthcare_dataset
+) t
+WHERE rnk = 1
+ORDER BY age DESC;
+
+
+-- Query 9: Days Since Patient Discharge
+-- Calculate time since discharge. Measure how long it has been since each patient left the hospital. Good for follow-up scheduling and post-treatment monitoring.
+SELECT patient_id, age, gender, hospital, TIMESTAMPDIFF(DAY, discharge_date, NOW()) AS days_since_discharge
+FROM Healthcare.healthcare_dataset;
+
+
+-- Query 10: Patient Length of Stay
+-- Calculate length of hospital stay. Measure duration between admission and discharge. Useful for resource planning, treatment efficiency, and cost analysis.
+SELECT patient_id, age, gender, department, hospital, discharge_date, admission_date,
+DATEDIFF(discharge_date, admission_date) AS Length_Of_Stay 
+FROM Healthcare.healthcare_dataset; 
