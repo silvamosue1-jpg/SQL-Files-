@@ -1,0 +1,82 @@
+-- Query 1: View the full dataset for initial exploration.
+SELECT * FROM FINANCE.data;
+
+
+-- Query 2. Count accounts with total balance above $15,000
+-- This is useful for customer segmentation and understanding high-value accounts.
+SELECT COUNT(*) FROM (
+SELECT account_id
+FROM FINANCE.data
+GROUP BY account_id
+HAVING SUM(balance) > 15000
+) 
+AS sub;
+
+
+-- Query 3. Average interest rate per bank
+-- This is good for comparing financial institutions and detecting outliers.
+SELECT bank, AVG(interest_rate) AS INTEREST
+FROM FINANCE.data
+GROUP BY bank
+ORDER BY INTEREST DESC;
+
+
+-- Query 4. Show the record with the highest balance
+-- Useful for risk assessment, audits, and client tier classification.
+SELECT * FROM FINANCE.data
+WHERE balance = (
+SELECT MAX(balance)
+FROM FINANCE.data
+);
+
+
+-- Query 5. Show all accounts with balance above the dataset average
+SELECT * FROM FINANCE.data
+WHERE balance > (
+SELECT AVG(balance)
+FROM FINANCE.data
+);
+
+
+-- Query 6. Bank market share by balance
+-- Calculate each bank’s percentage share of total balances.
+-- This is good in analytics to determine competitive positioning.
+SELECT bank,
+SUM(balance) AS BALANS,
+ROUND(SUM(balance) * 100.0 / SUM(SUM(balance)) OVER (), 2) AS Percentage_Share
+FROM FINANCE.data
+GROUP BY bank
+ORDER BY BALANS DESC;
+
+
+-- Query 7. Monthly balance totals for 2025
+-- Summarize balances by month for the year 2025.
+-- This is good for time-series analysis and monthly trend reporting.
+SELECT DATE_FORMAT(last_transaction_date, "%Y-%m") AS month,
+SUM(balance) AS BALANS
+FROM FINANCE.data
+WHERE YEAR(last_transaction_date) = 2025
+GROUP BY month
+ORDER BY month ASC;
+
+
+-- Query 8. Quarterly balance totals for 2024
+-- Show quarterly financial trends for 2024.
+-- Good for executive dashboards, quarterly financial reviews.
+SELECT YEAR(last_transaction_date) AS JAAR, 
+QUARTER(last_transaction_date) AS KWARTAAL,
+SUM(balance) AS BALANS
+FROM FINANCE.data
+WHERE YEAR(last_transaction_date) = 2024
+GROUP BY JAAR, KWARTAAL
+ORDER BY JAAR, KWARTAAL;
+
+
+-- Query 9. Year-over-year balance comparison
+-- Compare the total balances by year.
+-- This is for long-term financial trend analysis and forecasting.
+SELECT YEAR(last_transaction_date) AS JAAR,
+SUM(balance) AS BALANS
+FROM FINANCE.data
+GROUP BY JAAR
+ORDER BY JAAR ASC;
